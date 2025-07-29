@@ -1,0 +1,22 @@
+services:
+  sfcli:
+    container_name: sfcli-test
+    image: sfcli:test
+    build: ../docker/.
+    restart: unless-stopped
+    volumes:
+      - ./seafile:/seafile
+      - ./libraries:/libraries
+    environment:
+      - SFCLI_URL
+      - SFCLI_USERNAME
+      - SFCLI_PASSWORD
+      - SFCLI_TOTP
+      - SFCLI_LIBS_NOTES
+      - SFCLI_LIBS_EDUCATION
+    networks:
+      - sfcli-test-network
+
+networks:
+  sfcli-test-network:
+    name: sfcli-test-network
