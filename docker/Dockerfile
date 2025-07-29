@@ -19,7 +19,7 @@ ENV SFCLI_CONFIG_DIR=${SFCLI_BASE_DIR}/config
 ENV SFCLI_LIB_DIR=/libraries
 
 COPY VERSION .
-COPY ../entrypoint.sh .
+COPY entrypoint.sh .
 
 RUN chmod +x entrypoint.sh
 
