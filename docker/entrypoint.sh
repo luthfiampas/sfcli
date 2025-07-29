@@ -24,11 +24,19 @@ start_sync() {
     return
   fi
 
+  local synced_libs
+  synced_libs=$(seaf-cli list -c "${SFCLI_CONFIG_DIR}" 2>/dev/null | awk 'NR > 1 { print $2 }')
+
   while IFS='=' read -r var_name lib_id; do
     local lib_name="${var_name#SFCLI_LIBS_}"
     lib_name="${lib_name,,}"
 
     local lib_local_path="${SFCLI_LIB_DIR}/${lib_name}"
+
+    if echo "$synced_libs" | grep -q -F "$lib_id"; then
+      echo "⏳ Library '${lib_name}' (ID: ${lib_id}) is already synced. Skipping..."
+      continue
+    fi
 
     echo "⏳ Processing library: name='${lib_name}', id='${lib_id}'"
     mkdir -p "${lib_local_path}"
@@ -50,7 +58,7 @@ start_sync() {
       totp=$(oathtool --base32 --totp "$SFCLI_TOTP" 2>/dev/null)
 
       if [ -z "$totp" ]; then
-        echo "⏳ Error: Failed to generate TOTP token. Check your SFCLI_TOTP secret."
+        echo "❌ Error: Failed to generate TOTP token. Check your SFCLI_TOTP secret."
         exit 1
       fi
 
@@ -122,9 +130,13 @@ echo "   → SSL verification    : $([[ "$SFCLI_NOSSL" == "true" ]] && echo "dis
 echo "   → Download limit      : ${SFCLI_DL} bytes"
 echo "   → Upload limit        : ${SFCLI_UL} bytes"
 
-if ! seaf-cli init -c "${SFCLI_CONFIG_DIR}" -d "${SFCLI_BASE_DIR}"; then
-  echo "❌ Failed to initialize Seafile client. Check permissions or existing state."
-  exit 1
+if [ -f "${SFCLI_CONFIG_DIR}/seafile.ini" ]; then
+  echo "✅ Seafile client already initialized at ${SFCLI_CONFIG_DIR}, skipping init."
+else
+  if ! seaf-cli init -c "${SFCLI_CONFIG_DIR}" -d "${SFCLI_BASE_DIR}"; then
+    echo "❌ Failed to initialize Seafile client. Check permissions or existing state."
+    exit 1
+  fi
 fi
 
 if [ "$SFCLI_NOSSL" = "true" ]; then
