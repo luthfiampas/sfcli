@@ -2,7 +2,7 @@
 
 A dockerized [Seafile CLI client](https://help.seafile.com/syncing_client/linux-cli/), inspired by [flrnnc/docker-seafile-client](https://gitlab.com/flrnnc-oss/docker-seafile-client), with built-in support for syncing multiple libraries and Two-Factor Authentication (2FA).
 
-- Single-script entrypoint: [`entrypoint.sh`](entrypoint.sh).
+- Single-script entrypoint: [`entrypoint.sh`](docker/entrypoint.sh).
 - Runs the official Seafile CLI in a slim Debian-based container.
 - Supports syncing **multiple libraries** via environment variables.
 - Built-in [oathtool](https://www.nongnu.org/oath-toolkit/oathtool.1.html) support for 2FA (TOTP-based).
